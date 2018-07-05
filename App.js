@@ -9,28 +9,42 @@ export default class App extends React.Component {
       lat: 0,
       lon: 0,
       name: '',
-      x: ''
+      x: '',
+      house: {},
+      work: {},
+      university: {}
     }
   }
 
-  async function getPlaces = (place) => {
-    if(place == 'house'){
-      this.setState({name: 'Casa'})
-      this.setState({lat: -36.82379704})
-      this.setState({lon: -73.05620264})
+async componentDidMount() {
+  fetch('http://192.168.0.12:3000')
+    .then((response) => response.json())
+      .then((responseJson) => {
+        this.setState({
+          house: responseJson[0],
+          work: responseJson[1],
+          university: responseJson[2]
+        })
+      }) .catch((error) => {
+        console.warn(error);
+      });
+}
 
+   getPlaces = (place) => {
+    if(place == 'house'){
+      this.setState({name: this.state.house.name })
+      this.setState({lat: this.state.house.place[0] })
+      this.setState({lon: this.state.house.place[1] })
     }
     if(place == 'work'){
-      this.setState({name: 'Trabajo'})
-      this.setState({lat: -36.82269774})
-      this.setState({lon: -73.04822039})
-
+      this.setState({name: this.state.work.name })
+      this.setState({lat: this.state.work.place[0] })
+      this.setState({lon: this.state.work.place[1] })
     }
     if(place == 'uni'){
-      this.setState({name: 'Universidad'})
-      this.setState({lat: -36.82530856})
-      this.setState({lon: -73.06040835})
-
+      this.setState({name: this.state.university.name })
+      this.setState({lat: this.state.university.place[0] })
+      this.setState({lon: this.state.university.place[1] })
     }
   }
 
@@ -53,11 +67,6 @@ export default class App extends React.Component {
               longitude: this.state.lon
             }}
             title={ this.state.name }
-          />
-
-          <Marker draggable
-            coordinate={this.state.x}
-            onDragEnd={(e) => this.setState({ x: e.nativeEvent.coordinate })}
           />
 
           </MapView>
